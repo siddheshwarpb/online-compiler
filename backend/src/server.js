@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
 // ── Middleware ─────────────────────────────────────────────
 app.use(cors({
   origin: [
-    "http://localhost:5173",
+    "https://your-app.vercel.app",
     "https://your-app.vercel.app",   // add this
     /\.vercel\.app$/,                 // allow all vercel subdomains
   ]
@@ -56,5 +56,5 @@ app.get("/api/health", (_req, res) => {
 // ── Start ──────────────────────────────────────────────────
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
-  console.log(`✅ Backend API listening on http://localhost:${PORT}`);
+  console.log(`✅ Backend API listening on port ${PORT}`);
 });
