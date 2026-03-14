@@ -1,0 +1,269 @@
+/* ── App Shell ──────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 7px;
+  border-radius: 6px;
+}
+
+/* ── Language bar ────────────────────────────────────────────── */
+.langBar {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.langBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.langBtn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+.langBtnActive {
+  background: var(--primary)18;
+  border-color: var(--primary)44;
+  color: var(--primary);
+}
+
+/* ── Header actions ──────────────────────────────────────────── */
+.headerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btnGhost {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btnGhost:hover { color: var(--text); border-color: var(--muted); }
+
+.btnRun {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 20px;
+  border: none;
+  border-radius: 6px;
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 0 0 0 var(--primary);
+}
+.btnRun:hover:not(:disabled) {
+  background: #6fa4ff;
+  box-shadow: 0 0 16px var(--primary)66;
+}
+.btnRun:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Main layout ─────────────────────────────────────────────── */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Pane shared ─────────────────────────────────────────────── */
+.editorPane,
+.outputPane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editorPane { border-right: 1px solid var(--border); }
+
+.paneHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.paneTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+.dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+/* ── Editor wrap ─────────────────────────────────────────────── */
+.editorWrap {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Stdin ───────────────────────────────────────────────────── */
+.stdinSection {
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.stdinToggle {
+  width: 100%;
+  text-align: left;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.stdinToggle:hover { color: var(--text); }
+
+.stdinArea {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg);
+  border: none;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  resize: none;
+  outline: none;
+}
+.stdinArea::placeholder { color: var(--muted); }
+
+/* ── Output box ──────────────────────────────────────────────── */
+.outputBox {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.outputHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.statsMeta {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: auto;
+  font-family: var(--mono);
+}
+
+.outputContent {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
