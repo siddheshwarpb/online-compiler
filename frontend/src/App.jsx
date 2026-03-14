@@ -8,7 +8,7 @@ import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 import styles from "./App.module.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL || "https://online-compiler-production-23f9.up.railway.app";
 
 // ── Starter Templates ──────────────────────────────────────
 const TEMPLATES = {
