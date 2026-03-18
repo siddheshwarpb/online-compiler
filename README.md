@@ -4,164 +4,150 @@ A full-stack, production-ready online code compiler supporting **C++, Python, Ja
 
 ---
 
-## 📁 File Structure (20 files)
+## ✨ Features
+
+* 🌐 Run code directly in the browser
+* ⚡ Fast execution using Judge0 API
+* 🔁 Queue-based processing using Redis + BullMQ
+* 🐳 Fully Dockerized setup
+* 🧠 Multi-language support (C++, Python, Java, JS)
+* 💻 Clean UI with Monaco Editor
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+
+* React (Vite)
+* Monaco Editor
+
+### Backend
+
+* Node.js + Express
+* BullMQ (Job Queue)
+* Redis
+
+### Execution Engine
+
+* Judge0 API (for code execution)
+
+### DevOps
+
+* Docker + Docker Compose
+
+---
+
+## 📁 Project Structure
 
 ```
 online-compiler/
+├── docker-compose.yml        # Orchestrates all services
+├── frontend/                 # React frontend
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── styles
+│   ├── index.html
+│   ├── vite.config.js
+│   └── .dockerignore
 │
-├── docker-compose.yml              ← (1) Orchestrates all services
+├── backend/                  # Node.js backend
+│   ├── src/
+│   │   ├── server.js         # Express server
+│   │   ├── routes/
+│   │   │   └── run.js        # API route for execution
+│   │   └── workers/
+│   │       └── codeWorker.js # Worker processing jobs
+│   ├── package.json
+│   └── Dockerfile
 │
-├── build-images.sh                 ← (2) Builds Docker sandbox images
-│
-├── frontend/
-│   ├── Dockerfile                  ← (3) Frontend Docker image
-│   ├── package.json                ← (4) React dependencies
-│   ├── vite.config.js              ← (5) Vite build config
-│   ├── index.html                  ← (6) HTML entry point
-│   └── src/
-│       ├── main.jsx                ← (7) React root
-│       ├── index.css               ← (8) Global CSS variables
-│       ├── App.jsx                 ← (9) Main app component
-│       └── App.module.css          ← (10) Component styles
-│
-├── backend/
-│   ├── Dockerfile                  ← (11) Backend Docker image
-│   ├── package.json                ← (12) Node dependencies
-│   ├── .env.example                ← (13) Env vars template
-│   └── src/
-│       ├── server.js               ← (14) Express server + Socket.IO
-│       ├── routes/
-│       │   ├── run.js              ← (15) POST /api/run route
-│       │   └── languages.js        ← (16) GET /api/languages route
-│       └── workers/
-│           └── codeWorker.js       ← (17) BullMQ worker (runs Docker)
-│
-└── runners/
-    ├── cpp/
-    │   ├── Dockerfile              ← (18) GCC 13 sandbox
-    │   └── entrypoint.sh           ← Compile + run C++
-    ├── python/
-    │   ├── Dockerfile              ← (19) Python 3.12 sandbox
-    │   └── entrypoint.sh
-    ├── java/
-    │   ├── Dockerfile              ← (20) OpenJDK 21 sandbox
-    │   └── entrypoint.sh
-    └── javascript/
-        ├── Dockerfile              ← Node.js 20 sandbox
-        └── entrypoint.sh
+└── README.md
 ```
 
 ---
 
-## ✅ Step-by-Step Setup
+## ⚙️ How It Works
 
-### Prerequisites
-- **Docker Desktop** (running)
-- **Node.js 18+** (for local dev without Docker)
-- **Git**
+```
+Frontend → Backend → Redis Queue → Worker → Judge0 API → Output
+```
+
+1. User writes code in frontend
+2. Backend pushes job to Redis queue
+3. Worker picks job and sends to Judge0
+4. Output is returned to frontend
 
 ---
 
-### Step 1 — Clone / create project
+## 🐳 Running Locally (Docker)
+
+### 1. Clone the repo
+
 ```bash
-git clone <your-repo>
+git clone https://github.com/siddheshwarpb/online-compiler.git
 cd online-compiler
 ```
 
 ---
 
-### Step 2 — Build all sandbox Docker images
-```bash
-chmod +x build-images.sh
-./build-images.sh
-```
-This builds 4 images: `compiler-cpp`, `compiler-python`, `compiler-java`, `compiler-javascript`
+### 2. Run the app
 
----
-
-### Step 3 — Start everything with Docker Compose
 ```bash
 docker compose up --build
 ```
 
-Services started:
-| Service  | URL                        |
-|----------|----------------------------|
-| Frontend | http://localhost:5173       |
-| Backend  | http://localhost:4000       |
-| Redis    | localhost:6379              |
-
 ---
 
-### Step 4 — Open the compiler
-Visit **http://localhost:5173** in your browser.
-
----
-
-## 🔒 Security Features
-
-| Feature           | How it's enforced                        |
-|-------------------|------------------------------------------|
-| Memory limit      | `--memory=256m` Docker flag              |
-| CPU limit         | `--cpus=0.5` Docker flag                 |
-| No network        | `--network=none` Docker flag             |
-| Time limit        | `timeout 10s` in entrypoint.sh           |
-| Non-root user     | `USER runner` in each Dockerfile         |
-| Read-only fs      | `--read-only` Docker flag                |
-| Rate limiting     | 30 requests / 60s per IP (Express)       |
-| Code size limit   | 50,000 chars max (backend validation)    |
-
----
-
-## 📡 API Endpoints
-
-### `POST /api/run`
-```json
-// Request
-{
-  "language": "python",
-  "code": "print('hello')",
-  "stdin": ""
-}
-
-// Response
-{
-  "output": "hello\n",
-  "error": false,
-  "time": "0.18s",
-  "memory": "12MB"
-}
-```
-
-### `GET /api/languages`
-Returns list of supported languages with metadata.
-
-### `GET /api/health`
-Returns `{ "status": "ok" }`.
-
----
-
-## ⚙️ Architecture Flow
+### 3. Open in browser
 
 ```
-Browser (Monaco Editor)
-        ↓  POST /api/run
-Express Backend (port 4000)
-        ↓  enqueue job
-Redis Queue (BullMQ)
-        ↓  pick up job
-Worker (3 replicas)
-        ↓  docker run compiler-{lang}
-Sandbox Container (isolated)
-        ↓  compile + execute
-Result → Redis → API → Frontend
+http://localhost:5173
 ```
 
 ---
 
-## 🚀 Production Improvements
-- Replace polling with Socket.IO streaming output
-- Add Kubernetes for auto-scaling workers
-- Use Firecracker microVMs instead of Docker
-- Add user auth + code history (PostgreSQL)
-- Add Judge0-compatible API for contest mode
+## 🔧 Environment Variables
+
+### Frontend (`frontend/.env`)
+
+```
+VITE_API_URL=http://localhost:4000
+```
+
+### Backend
+
+```
+REDIS_URL=redis://redis:6379
+PORT=4000
+```
+
+---
+
+## 🚀 Future Improvements
+
+* 🔥 Custom Docker-based execution (own compiler)
+* 📊 Execution metrics (time, memory)
+* 🧪 Test case support (like LeetCode)
+* 🔐 Authentication system
+* 🌍 Deploy to cloud (Railway / AWS)
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, open an issue first.
+
+---
+
+## 📜 License
+
+This project is open-source and free to use.
+
+---
+
+## 👨‍💻 Author
+
+**Siddheshwar Budge**
+
+---
