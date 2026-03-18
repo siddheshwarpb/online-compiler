@@ -21,6 +21,14 @@ services:
       - REDIS_URL=redis://redis:6379
       - PORT=4000
 
+  worker:
+    build: ./backend
+    command: node src/workers/codeWorker.js
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379
+
   redis:
     image: redis:7-alpine
     ports:

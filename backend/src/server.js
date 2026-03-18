@@ -2,17 +2,17 @@
 // server.js — Express API + Socket.IO
 // Routes: POST /api/run  GET /api/health  GET /api/languages
 // ============================================================
-import express        from "express";
-import cors           from "cors";
+import express from "express";
+import cors from "cors";
 import { createServer } from "http";
-import { Server }     from "socket.io";
-import rateLimit      from "express-rate-limit";
+import { Server } from "socket.io";
+import rateLimit from "express-rate-limit";
 import "dotenv/config";
 
-import runRouter      from "./routes/run.js";
-import langRouter     from "./routes/languages.js";
+import runRouter from "./routes/run.js";
+import langRouter from "./routes/languages.js";
 
-const app    = express();
+const app = express();
 const server = createServer(app);
 
 // ── Socket.IO (optional real-time output streaming) ────────
@@ -26,12 +26,15 @@ io.on("connection", (socket) => {
 });
 
 // ── Middleware ─────────────────────────────────────────────
+// app.use(cors({
+//   origin: [
+//     "https://your-app.vercel.app",
+//     "https://your-app.vercel.app",   // add this
+//     /\.vercel\.app$/,                 // allow all vercel subdomains
+//   ]
+// }));
 app.use(cors({
-  origin: [
-    "https://your-app.vercel.app",
-    "https://your-app.vercel.app",   // add this
-    /\.vercel\.app$/,                 // allow all vercel subdomains
-  ]
+  origin: "*"
 }));
 app.use(express.json({ limit: "100kb" }));
 
@@ -46,7 +49,7 @@ const limiter = rateLimit({
 app.use("/api/run", limiter);
 
 // ── Routes ─────────────────────────────────────────────────
-app.use("/api/run",       runRouter);
+app.use("/api/run", runRouter);
 app.use("/api/languages", langRouter);
 
 app.get("/api/health", (_req, res) => {
